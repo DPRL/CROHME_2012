@@ -1,4 +1,3 @@
-
 RIT DPRL CROHME 2012
 ---------------
 DPRL CROHME 2012
@@ -17,7 +16,7 @@ Contact:
    - Lei Hu: lei.hu@rit.edu
    - David Stalnaker: david.stalnaker@gmail.com
    - Richard Zanibbi: rlaz@cs.rit.edu 
------------------
+
 This document is about DPRL's submission for the [CROHME 2012]. CROHME is the abbreviation of Competition on Recognition of Online Handwritten Mathematical Expression. 
 
 The DPRL CROHME 2012 is a three-stage system comprised of a fuzzy segmenter, a Hidden Markov Model classifier, and a DRACULAE parser.
