@@ -1,0 +1,90 @@
+#    DPRL CROHME 2012
+#    Copyright (c) 2012-2014 Lei Hu, David Stalnaker, Richard Zanibbi
+#
+#    This file is part of DPRL CROHME 2012.
+#
+#    DPRL CROHME 2012 is free software: 
+#    you can redistribute it and/or modify it under the terms of the GNU 
+#    General Public License as published by the Free Software Foundation, 
+#    either version 3 of the License, or (at your option) any later version.
+#
+#    DPRL CROHME 2012 is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with DPRL CROHME 2012.  
+#    If not, see <http://www.gnu.org/licenses/>.
+#
+#    Contact:
+#        - Lei Hu: lei.hu@rit.edu
+#        - David Stalnaker: david.stalnaker@gmail.com
+#        - Richard Zanibbi: rlaz@cs.rit.edu 
+
+#!/bin/bash
+
+if [ $# -lt 2 ]
+then
+	echo "DPRL Math Recognizer Submission (CROHME 2012)"
+	echo ""
+	echo "Usage: ./dprlPart3 input.inkml output.inkml"
+	echo ""
+	exit 0
+fi
+
+# INSERT CODE TO VARY PARAMETERS HERE.
+INPUT=$1
+OUTPUT=$2
+BASENAME=`basename $INPUT .inkml`
+#echo "BASENAME: $BASENAME"
+
+# Run initial segmentation
+echo "[ Segmenting ]"
+python segmentation.py get_segmentations_fuzzy $INPUT ./seg_dir
+
+# Refine segmentation and classify
+echo "[ Refining segmentation and classifying ]"
+cp -r ./seg_dir/$BASENAME classifiers/part3/
+# Remove the segmentation data (copied over to classific. directory)
+
+cd classifiers/part3
+matlab -nodisplay -r "CROHME2012 $BASENAME" &> /dev/null
+# Remove the segmentation data copy.
+rm -r $BASENAME 
+cd ../..
+
+# Parse
+echo ""
+echo "[ Parsing Recognized Symbols ]"
+./parse.pl classifiers/part3/$BASENAME.csv $INPUT $OUTPUT
+rm classifiers/part3/$BASENAME.csv
+
+if [ $? -gt 0 ]
+then
+	echo "run: Parse failure. Stopping script."
+	exit 1
+fi
+
+
+# Clean up - remove segmentation result data.
+rm -r ./seg_dir/$BASENAME
+#rm DRACULAE.bst
+#rm temp.dat
+
+# Evaluate. 
+
+
+# Evaluate. 
+#echo "Metrics for recognition result:"
+#./evalInkml_v1.6.pl $1 $2 -R
+
+# Parse
+#echo ""
+#echo "[ Parsing Ground Truth Symbol Input ]"
+#./parse.pl DRAC_truth/$BASENAME.csv $1 $OUTPUT-truth
+#echo "done."
+
+#echo "Metrics for ideal input:"
+#./evalInkml_v1.6.pl $1 $OUTPUT-truth -R
+

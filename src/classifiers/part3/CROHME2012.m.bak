@@ -1,0 +1,59 @@
+% this script is used produce the DRACULAE input
+function CROHME2012(ExpressionName)
+
+
+%% load the bin information
+cur_dir = cd;
+source_dir = strcat(cur_dir, '/Bin');
+foldername = dir(source_dir);
+folder_names = {foldername.name};
+namelen = length(folder_names);
+
+BinInfo = struct('BinLength',{},'BinPro',{});
+
+for inamelen = 3:namelen
+    folder_names{inamelen};
+    load_data = load(strcat(source_dir,'/',folder_names{inamelen}));
+    BinInfo(inamelen-2) =  load_data; 
+end
+
+%% load the symbol_prior_probability, hmm_parameter, and average_pro
+[symbol_prior_probability, hmm_parameter] = load_prior_and_hmmparameter;
+load_average_probability = load('average_probability.mat');
+ap_and_si = load_average_probability.ap_and_si;
+
+average_pro = zeros(1, length(ap_and_si));
+for i=1:length(ap_and_si)
+    average_pro(i) = ap_and_si{i}.ap;
+end
+
+
+%% get segmentation results using Dave's method and
+%% Lei's greedy method
+CurrentDir = cd;
+%DestinationDir = strcat(CurrentDir, '/test');
+DestinationDir = cd;
+
+% foldername = dir(DestinationDir);
+% folder_names = {foldername.name};
+% namelen = length(folder_names);
+
+% AllSegmentationResults = {};
+
+%for i = 3:namelen
+   % ExpressionName = folder_names{i}
+    ExpressionFolder = strcat(DestinationDir,'/', ExpressionName);
+    %WrongSegmentationScore = [];
+%     SegmentationResults = {};
+    % WrongSegmentationScore = GetWrongSegmentationScore(ExpressionFolder, ExpressionName, symbol_prior_probability, hmm_parameter, average_pro);
+     
+ SegmentationResults = GetSegmentationResults(ExpressionFolder, ExpressionName, symbol_prior_probability, hmm_parameter, average_pro, BinInfo);
+     
+     CSV = GetCSV(SegmentationResults, ExpressionFolder, ExpressionName, symbol_prior_probability, hmm_parameter, average_pro, BinInfo);
+     
+    % length(WrongSegmentationScore);
+    %AllWrongSegmentationScore = [AllWrongSegmentationScore, WrongSegmentationScore];
+%     AllSegmentationResults{i-2} = SegmentationResults;
+%end
+
+end
